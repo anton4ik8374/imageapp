@@ -1,5 +1,10 @@
 <template>
   <v-card class="mx-5 my-5 pa-3">
+    <v-alert v-if="alert"
+        text="Ссылка на изображение скопирована в ваш буфер обмен."
+        title="Информация"
+        type="success"
+    ></v-alert>
     <v-row>
       <v-col
           v-for="n in 200"
@@ -9,10 +14,10 @@
           md="2"
           lg="1"
       >
-        <v-card @click="getLink">
+        <v-card @click="copyUrl(`https://loremflickr.com${color}${w}/${h}/cats?lock=${n * 5 + 10}`)">
           <v-img
               :lazy-src="`https://loremflickr.com${color}50/30/cats?lock=${n * 5 + 10}`"
-              :src="`https://loremflickr.com${color}500/300/cats?lock=${n * 5 + 10}`"
+              :src="`https://loremflickr.com${color}${w}/${h}/cats?lock=${n * 5 + 10}`"
               aspect-ratio="1"
               cover
           >
@@ -41,12 +46,32 @@ import {defineComponent} from 'vue';
 export default defineComponent({
   name: 'ImagesGallery',
   props: {
-    color: String
+    color: String,
+    w: {
+      type: String,
+      default: '500'
+    },
+    h: {
+      type: String,
+      default: '300'
+    },
   },
+  data: () => ({
+    alert: false
+  }),
   methods:{
-    getLink(e){
-      console.log(e);
+    async copyUrl(url){
+          this.alert = true;
+         await navigator.clipboard.writeText(url)
     }
+  },
+  mounted() {
+    let self = this;
+     setTimeout(function(){
+       if(self.alert){
+         self.alert = false;
+       }
+     }, 5000);
   }
 });
 </script>
